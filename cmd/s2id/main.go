@@ -68,20 +68,24 @@ func LoadPolygon() *s2.Loop {
 	return s2.LoopFromPoints(points)
 }
 
-//func GetOuterCovering(loop s2.Loop) {
-//
-//	rc := s2.RegionCoverer{
-//		MaxCells: 100,
-//		MinLevel: 5,
-//		MaxLevel: 10,
-//	}
-//
-//}
+func GetOuterCovering(loops *s2.Loop) {
+	//rc := s2.RegionCoverer{
+	//	MaxCells: 100,
+	//	MinLevel: 5,
+	//	MaxLevel: 10,
+	//}
+	//
+	//var coverings []s2.RegionCoverer
+	for _, loop := range loops.Vertices() {
+		fmt.Println(loop)
+	}
+
+}
 
 func main() {
 	polygon := LoadPolygon()
 
 	fmt.Println(polygon)
 
-	//GetOuterCovering(polygon)
+	GetOuterCovering(polygon)
 }
