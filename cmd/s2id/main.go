@@ -1,18 +1,15 @@
 package main
 
 import (
-	//"encoding/json"
 	"fmt"
-	"github.com/paulmach/go.geojson"
+	"github.com/golang/geo/s2"
+	geojson "github.com/paulmach/go.geojson"
+	//s2 "github.com/golang/geo/s2"
 )
-//import "github.com/golang/geo/s2"
 //import "io/ioutil"
 
-//func LoopsFromFeatureCollection() {
-//
-//}
 
-func LoadGeojson() {
+func LoadPolygon() *s2.Loop {
 	rawFeatureJSON := []byte(`{
 	 "type": "FeatureCollection",
 	 "features": [
@@ -51,30 +48,40 @@ func LoadGeojson() {
 	}`)
 
 	fc, err := geojson.UnmarshalFeatureCollection(rawFeatureJSON)
+	if err != nil {
+		println(err)
+	}
 
 	fmt.Println("Coordinates Type: " + fc.Features[0].Geometry.Type)
 	fmt.Println(fc.Features[0].Geometry.Polygon[0][0][0])
 	fmt.Println(fc.Features[0].Geometry.Polygon[0][0][1])
 
-	//
-	//// Geometry
-	//rawGeometryJSON := []byte(`{"type": "Point", "coordinates": [102.0, 0.5]}`)
-	//g, err := geojson.UnmarshalFeatureCollection(rawGeometryJSON)
-	//
-	//println(g.IsPoint())
-	//println(g.Point[0])
+	coordinates := fc.Features[0].Geometry.Polygon[0]
 
-
-
-
-	if err != nil {
-		println(err)
+	var points []s2.Point
+	for _, coordinate := range coordinates {
+		s2ll := s2.LatLngFromDegrees(coordinate[0], coordinate[1])
+		point := s2.PointFromLatLng(s2ll)
+		points = append(points, point)
 	}
 
-
-
+	return s2.LoopFromPoints(points)
 }
 
+//func GetOuterCovering(loop s2.Loop) {
+//
+//	rc := s2.RegionCoverer{
+//		MaxCells: 100,
+//		MinLevel: 5,
+//		MaxLevel: 10,
+//	}
+//
+//}
+
 func main() {
-	LoadGeojson()
+	polygon := LoadPolygon()
+
+	fmt.Println(polygon)
+
+	//GetOuterCovering(polygon)
 }
